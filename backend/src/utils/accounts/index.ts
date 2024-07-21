@@ -1,3 +1,8 @@
+import {
+  AccountEntity,
+  AccountOptions,
+} from 'src/modules/account/account.entity';
+
 type operationBetweenAccountsTypes = 'credit' | 'transfer';
 
 interface IcalculateBonusByOperationTypeAttributes {
@@ -13,7 +18,7 @@ export function calculateBonusByOperationType(
   }
 
   if (param.operationType === 'transfer') {
-    return Math.trunc(param.value / 200);
+    return Math.trunc(param.value / 150);
   }
 }
 
@@ -32,4 +37,20 @@ export function addPointsToBonusAccount(
       value: param.value,
     })
   );
+}
+
+export function isCheckingAccount(accountType: AccountOptions) {
+  return ['Bonus', 'Default'].includes(accountType);
+}
+
+export function isDefaultOrBonusWithExcessiveDebt(
+  account: AccountEntity,
+  amount: number,
+) {
+  if (!isCheckingAccount(account.type)) {
+    return false;
+  }
+
+  const newBalance = account.balance - amount;
+  return newBalance < -1000;
 }

@@ -19,7 +19,9 @@ export class AccountController {
   @Post()
   async createAccount(
     @Body('number') number: string,
+    @Body('balance') balance: string,
     @Body('type') type: AccountOptions,
+    @Body('balance') balance?: string,
   ) {
     if (!number) {
       throw new BadRequestException('Account number is required.');
@@ -32,11 +34,13 @@ export class AccountController {
     const account = await this.accountService.createAccount(
       Number(number),
       type,
+      Number(balance),
     );
     return {
       status: HttpStatus.CREATED,
       message: 'Account created!',
       account,
+      balance,
     };
   }
 
@@ -56,6 +60,18 @@ export class AccountController {
     @Param('number') number: string,
     @Body('amount') amount: string,
   ) {
+    if (!number) {
+      throw new BadRequestException('Account number is required.');
+    }
+
+    if (!amount) {
+      throw new BadRequestException('Amount is required.');
+    }
+
+    if (Number(amount) < 0) {
+      throw new BadRequestException('Amount should be greater than 0.');
+    }
+
     const updatedAccount = await this.accountService.debitFromAccount(
       Number(number),
       Number(amount),
@@ -80,6 +96,10 @@ export class AccountController {
       throw new BadRequestException('Amount is required.');
     }
 
+    if (Number(amount) < 0) {
+      throw new BadRequestException('Amount should be greater than 0.');
+    }
+
     const updatedAccount = await this.accountService.creditToAccount(
       Number(number),
       Number(amount),
@@ -91,6 +111,7 @@ export class AccountController {
       updatedAccount: {
         number: updatedAccount.number,
         balance: updatedAccount.balance,
+        bonusScore: updatedAccount.bonusScore,
       },
     };
   }
@@ -105,6 +126,10 @@ export class AccountController {
       throw new BadRequestException(
         'To account number and amount are required.',
       );
+    }
+
+    if (Number(amount) < 0) {
+      throw new BadRequestException('Amount should be greater than 0.');
     }
 
     const updatedAccounts = await this.accountService.transferAmount(
