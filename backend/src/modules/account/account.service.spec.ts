@@ -164,7 +164,7 @@ describe('AccountService', () => {
 
   describe('debitFromAccount', () => {
     it('should throw BadRequestException if balance is insufficient', async () => {
-      await expect(service.debitFromAccount(123, 1501)).rejects.toThrow(
+      await expect(service.debitFromAccount(123, 2501)).rejects.toThrow(
         BadRequestException,
       );
     });
@@ -190,7 +190,7 @@ describe('AccountService', () => {
 
   describe('transferAmount', () => {
     it('should throw BadRequestException if balance is insufficient', async () => {
-      await expect(service.transferAmount(123, 1234, 2500)).rejects.toThrow(
+      await expect(service.transferAmount(123, 1234, 3500)).rejects.toThrow(
         BadRequestException,
       );
     });
