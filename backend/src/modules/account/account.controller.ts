@@ -48,12 +48,10 @@ export class AccountController {
 
   @Get(':number')
   async getAccountDetails(
-    @Param('number') number: string,
+    @ParaM('number') number: string,
     @Res() response: Response,
   ) {
-    const account = await this.accountService.getAccountByNumber(
-      Number(number),
-    );
+    const account = await this.accountService.getAccountByNumber(Number(numbe));
     if (!account) {
       throw new NotFoundException('Account not found.');
     }
