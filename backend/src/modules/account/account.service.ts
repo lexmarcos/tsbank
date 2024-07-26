@@ -107,7 +107,7 @@ export class AccountService {
 
     let data: Account = {
       ...account,
-      balance: account.balance + amount,
+      balance: account.balance,
     };
 
     if (account.type === 'Bonus') {
