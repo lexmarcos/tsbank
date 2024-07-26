@@ -9,9 +9,13 @@ import { PrismaService } from '../../prisma.service';
 import { AccountEntity, AccountOptions } from './account.entity';
 import {
   addPointsToBonusAccount,
-  isDefaultOrBonusWithExcessiveDebt,
+  isBonusAccountWithExcessiveDebt,
+  isDefaultAccountWithExcessiveDebt,
 } from 'src/utils/accounts';
-import { MAXIMUM_NEGATIVE_BALANCE_ALLOWED } from 'src/utils/accounts/constants';
+import {
+  MAXIMUM_NEGATIVE_BALANCE_ALLOWED,
+  MAXIMUM_NEGATIVE_BALANCE_ALLOWED_TO_BONUS_ACCOUNT,
+} from 'src/utils/accounts/constants';
 @Injectable()
 export class AccountService {
   constructor(private prisma: PrismaService) {}
@@ -86,9 +90,15 @@ export class AccountService {
       throw new BadRequestException('Insufficient balance.');
     }
 
-    if (isDefaultOrBonusWithExcessiveDebt(account, amount)) {
+    if (isDefaultAccountWithExcessiveDebt(account, amount)) {
       throw new BadRequestException(
         `Debits amount exceeds maximum allowed negative balance (${MAXIMUM_NEGATIVE_BALANCE_ALLOWED}).`,
+      );
+    }
+
+    if (isBonusAccountWithExcessiveDebt(account, amount)) {
+      throw new BadRequestException(
+        `Debits amount exceeds maximum allowed negative balance (${MAXIMUM_NEGATIVE_BALANCE_ALLOWED_TO_BONUS_ACCOUNT}).`,
       );
     }
 
@@ -138,9 +148,15 @@ export class AccountService {
       throw new BadRequestException('Insufficient balance.');
     }
 
-    if (isDefaultOrBonusWithExcessiveDebt(fromAccount, amount)) {
+    if (isDefaultAccountWithExcessiveDebt(fromAccount, amount)) {
       throw new BadRequestException(
         `Transfer amount exceeds maximum allowed negative balance (${MAXIMUM_NEGATIVE_BALANCE_ALLOWED}).`,
+      );
+    }
+
+    if (isBonusAccountWithExcessiveDebt(fromAccount, amount)) {
+      throw new BadRequestException(
+        `Transfer amount exceeds maximum allowed negative balance (${MAXIMUM_NEGATIVE_BALANCE_ALLOWED_TO_BONUS_ACCOUNT}).`,
       );
     }
 
